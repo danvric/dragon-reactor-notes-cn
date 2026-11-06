@@ -1,0 +1,2226 @@
+* CLE-2000 VERS 3.0 * R.ROY, EPM COPYRIGHT 1999 *                                                                          LINE
+PROCEDURE assertS SetModel SetReflPro SetDevPro                                                                            0001
+SetFuelMap SetBurnup SetDevice SetDetect ;                                                                                 0002
+LINKED_LIST GEOM MATEX TRACK DEVICE MACRO FMAP NEWFLUX                                                                     0003
+MACROFUEL MACROFUEL2 MACRO3 SYSTEM FLUX POWER DETECT ;                                                                     0004
+MODULE DSET: CRE: MACINI: TRIVAT: TRIVAA: NEWMAC: DETECT:                                                                  0005
+FLUD: FLPOW: TINST: DELETE: GREP: END:   ;                                                                                 0006
+REAL Keff ;                                                                                                                0007
+INTEGER MaxR := 30000 ;                                                                                                    0008
+GEOM MATEX := SetModel :: <<MaxR>> ;                                                                                       0009
+TRACK := TRIVAT: GEOM :: MAXR <<MaxR>> MCFD 1 ;                                                                            0010
+DEVICE MATEX := SetDevice MATEX ;                                                                                          0011
+DEVICE := DSET: DEVICE ::                                                                                                  0012
+EDIT 0                                                                                                                     0013
+LZC 1 LEVEL .5026 TIME 60. END                                                                                             0014
+LZC 2 LEVEL .5400 TIME 36. END                                                                                             0015
+LZC 3 LEVEL .3853 TIME 36. END                                                                                             0016
+LZC 4 LEVEL .3442 TIME 36. END                                                                                             0017
+LZC 5 LEVEL .4485 TIME 36. END                                                                                             0018
+LZC 6 LEVEL .5590 TIME 60. END                                                                                             0019
+LZC 7 LEVEL .3803 TIME 36. END                                                                                             0020
+LZC 8 LEVEL .4354 TIME 60. END                                                                                             0021
+LZC 9 LEVEL .5313 TIME 36. END                                                                                             0022
+LZC 10 LEVEL .5642 TIME 36. END                                                                                            0023
+LZC 11 LEVEL .4256 TIME 36. END                                                                                            0024
+LZC 12 LEVEL .4427 TIME 36. END                                                                                            0025
+LZC 13 LEVEL .5752 TIME 60. END                                                                                            0026
+LZC 14 LEVEL .5126 TIME 36. END                                                                                            0027
+;                                                                                                                          0028
+DETECT := SetDetect ;                                                                                                      0029
+FMAP MATEX := SetFuelMap MATEX ;                                                                                           0030
+FMAP := SetBurnup FMAP ;                                                                                                   0031
+FMAP := TINST: FMAP  ::                                                                                                    0032
+EDIT 0                                                                                                                     0033
+TIME 1.0 DAY                                                                                                               0034
+REFUEL CHAN M02  8                                                                                                         0035
+REFUEL CHAN D15  8                                                                                                         0036
+REFUEL CHAN Q12  8                                                                                                         0037
+REFUEL CHAN H06  8                                                                                                         0038
+TIME 2.4  DAY  ;                                                                                                           0039
+LINKED_LIST CPOREFL ;                                                                                                      0040
+SEQ_ASCII CELNAT REFL ;                                                                                                    0041
+CPOREFL := REFL ;                                                                                                          0042
+MACRO := SetReflPro CPOREFL ;                                                                                              0043
+LINKED_LIST GT ADJ ZCR STRUC ;                                                                                             0044
+SEQ_ASCII GTUBEB RODB ZCPOB MATSTRB ;                                                                                      0045
+GT := GTUBEB  ;                                                                                                            0046
+STRUC := MATSTRB ;                                                                                                         0047
+ZCR := ZCPOB   ;                                                                                                           0048
+ADJ := RODB   ;                                                                                                            0049
+MACRO := SetDevPro MACRO GT ADJ ZCR STRUC ;                                                                                0050
+LINKED_LIST CPOFUEL ;                                                                                                      0051
+SEQ_ASCII CELNAT ;                                                                                                         0052
+CPOFUEL := CELNAT ;                                                                                                        0053
+MACROFUEL := CRE: CPOFUEL FMAP :: EDIT 0 READ                                                                              0054
+TABLE CPOFUEL                                                                                                              0055
+MIX 1 'MIXTRXE    1'                                                                                                       0056
+INST-BURN                                                                                                                  0057
+MICRO ALL                                                                                                                  0058
+ENDMIX ;                                                                                                                   0059
+MACROFUEL2 MATEX := MACINI: MATEX MACRO MACROFUEL :: EDIT 0 ;                                                              0060
+MACRO3 MATEX := NEWMAC: MATEX MACROFUEL2 DEVICE :: EDIT 0 ;                                                                0061
+SYSTEM := TRIVAA: MACRO3 TRACK :: EDIT 0 ;                                                                                 0062
+FLUX := FLUD: SYSTEM TRACK ::  EDIT 0 EXTE 100 1.E-6 ;                                                                     0063
+POWER NEWFLUX := FLPOW: FMAP FLUX TRACK MATEX :: EDIT 2 PTOT 2061.4 ;                                                      0064
+DETECT := DETECT: DETECT NEWFLUX TRACK GEOM :: EDIT 5 REF 0 TIME 0.25 SIMEX ;                                              0065
+SYSTEM MATEX TRACK MACRO MACROFUEL MACROFUEL2 GEOM DETECT                                                                  0066
+FMAP := DELETE: SYSTEM MATEX TRACK MACRO MACROFUEL MACROFUEL2 DETECT GEOM FMAP ;                                           0067
+GREP: FLUX :: GETVAL "K-EFFECTIVE" 1 >>Keff<< ;                                                                            0068
+                     ?           ?                                                                                      @{
+ECHO "K-EFFECTIVE: " Keff ;                                                                                                0069
+END: ;                                                                                                                     0070
+QUIT .                                                                                                                     0071
+ 
+ @@@@@@@     @@@@@   @@     @@   @@@@@@   @@@@@   @@     @@
+ @@@@@@@@   @@@@@@@  @@@    @@       @@  @@@@@@@  @@@    @@
+ @@     @@ @@     @@ @@@@   @@       @@ @@     @@ @@@@   @@
+ @@     @@ @@     @@ @@ @@  @@       @@ @@     @@ @@ @@  @@
+ @@     @@ @@     @@ @@  @@ @@       @@ @@     @@ @@  @@ @@
+ @@     @@ @@     @@ @@   @@@@       @@ @@     @@ @@   @@@@
+ @@@@@@@@   @@@@@@@  @@    @@@ @@    @@  @@@@@@@  @@    @@@
+ @@@@@@@     @@@@@   @@     @@  @@@@@@    @@@@@   @@     @@
+
+           VERSION donjon 5  Version 5.0.12 ($Revision: 3956 $)                  $Date: 2025-09-05 09:32:25 -0400 (Fri, 05 Sep 2025) $           
+           GROUPE D'ANALYSE NUCLEAIRE
+           ECOLE POLYTECHNIQUE DE MONTREAL
+
+
+ COPYRIGHT NOTICE FOR THIS VERSION OF donjon:
+ --------------------------------------------
+ Copyright (C) 2007 Ecole Polytechnique de Montreal 
+ This library is free software; you can redistribute it
+ and/or modify it under the terms of the GNU Lesser General
+ Public License as published by the Free Software Foundation;
+ either version 2.1 of the License, or (at your option) any
+ later version 
+
+
+
+->@BEGIN MODULE : GEO:        
+->@DESCRIPTION  : Geometry definition                                                     
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ CREATION OF A LEVEL  1 GEOMETRY ON THE DIRECTORY NAMED '/           ' OF THE LCM OBJECT 'GEOM        ' WITH TYPE CARTESIAN 3-D   .
+
+ STATE VECTOR:
+ ITYPE      7   (CARTESIAN 3-D   )
+ LR         0   (NUMBER OF TUBES)
+ LX        44   (X-DIMENSION INDEX)
+ LY        30   (Y-DIMENSION INDEX)
+ LZ        22   (Z-DIMENSION INDEX)
+ LREG   29040   (NUMBER OF REGIONS)
+ MAXMIX     2   (MAX. NB. OF MIXTURES/0=TRANSPARENT GEOMETRY)
+ ISUB1      0   (1=COMMAND CELL IS USED/0=ELSE)
+ ISUB2      0   (NUMBER OF SUB GEOMETRIES)
+ IMERGE     0   (1=CELL-MERGING/0=ELSE)
+ ISPLIT     0   (1=MESH-SPLITTING/0=ELSE)
+ IBIHET     0   (1=DOUBLE HETEROGENEITY/0=ELSE)
+ ICLUST     0   (NUMBER OF CLUSTER RINGS)
+ ISECT      0   (TYPE OF SECTORIZATION)
+ JSECT      0   (NUMBER OF NON-SECTORIZED ANNULII)
+ IPIN       0   (PIN LOCATION OPTION)
+->@END MODULE   : GEO:        
+-->>MODULE GEO:        : TIME SPENT=        0.000 MEMORY USAGE= 4.520E+02
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> USPLIT:     
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> LINK MATERIAL INDEX AND REACTOR GEOMETRY                                
+ @CREDITS      -> J. KOCLAS, D. SEKKI                                                     
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MATEX       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'MAT         '     29040    INTEGER         
+        2  'INDEX       '     29040    INTEGER         
+        3  'RMIX        '         1    INTEGER         
+        4  'RTOT        '         1    INTEGER         
+        5  'FMIX        '         1    INTEGER         
+        6  'FTOT        '         1    INTEGER         
+        7  'MESHX       '        45    REAL            
+        8  'MESHY       '        31    REAL            
+        9  'MESHZ       '        23    REAL            
+       10  'SIGNATURE   '         3    CHARACTER       ='L_MATEX     '
+       11  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     58226
+
+ @END MODULE -> USPLIT:     
+-->>MODULE USPLIT:     : TIME SPENT=        0.000 MEMORY USAGE= 7.760E+02
+->@BEGIN MODULE : TRIVAT:     
+->@DESCRIPTION  : 3-D diffusion or SPN finite element tracking                            
+->@CREDITS      : A. Hebert                                                               
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ EXEC: TRIVAT:      BY A. HEBERT
+
+ TRITRK: DEGREE OF FINITE ELEMENT IELEM =  1
+         TYPE OF QUADRATURE ICOL =  2
+         TYPE OF DISCRETIZATION ICHX =  3
+
+
+ 3-D CARTESIAN GEOMETRY.
++                          BASED ON GEOMETRY GEOM        .
+
+
+ NUMBER OF MESH INTERVALS ALONG THE X AXIS =   44     AVAILABLE STORAGE MAXX =  30000
+                          ALONG THE Y AXIS =   30     AVAILABLE STORAGE MAXY =  30000
+                          ALONG THE Z AXIS =   22     AVAILABLE STORAGE MAXZ =  30000
+ NUMBER OF DISTINCT MIXTURES =  21120
+
+
+ TRITRK: PERFORM A CYLINDRICAL CORRECTION ON THE CARTESIAN BOUNDARY.
+
+ TRIDFC: MESH CENTERED FINITE DIFFERENCE OR NODAL COLLOCATION METHOD.
+
+ NUMBER OF ELEMENTS ALONG X AXIS = 44
+                    ALONG Y AXIS = 30
+                    ALONG Z AXIS = 22
+
+ TRITRK: MESH CENTERED FINITE DIFFERENCES.
+
+ TRITRK: ORDER OF LINEAR SYSTEMS =   21120
+         NUMBER OF UNKNOWNS PER ENERGY GROUP =   21120
+
+ TRICH1: MAXIMUM BANDWIDTH ALONG X AXIS =    2
+                           ALONG Y AXIS =    2
+                           ALONG Z AXIS =    2
+-->>MODULE TRIVAT:     : TIME SPENT=        0.000 MEMORY USAGE= 5.572E+03
+->@END MODULE   : TRIVAT:     
+>|52                                                                                                                      |>0419
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> DEVINI:     
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> MODELING OF ROD-DEVICES IN THE REACTOR CORE                             
+ @CREDITS      -> D. SEKKI                                                                
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> DEVINI:     
+-->>MODULE DEVINI:     : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> LZC:        
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> MODELING OF LIQUID ZONE CONTROLLERS                                     
+ @CREDITS      -> D. SEKKI                                                                
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> LZC:        
+-->>MODULE LZC:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> DSET:       
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> UPDATE DEVICES PARAMETERS                                               
+ @CREDITS      -> D. SEKKI                                                                
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> DSET:       
+-->>MODULE DSET:       : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> DETINI:     
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> CONSTRUCT 2D AND 3D DETECTORS IN THE CORE                               
+ @CREDITS      -> J. KOCLAS, E. VARIN, M. GUYOT                                           
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ **** WARINING **** ENERGY SPECTRAL INITIALIZED TO 1.0 IN THE HIGHEST GROUP ONLY 
+ **** WARINING **** ENERGY SPECTRAL INITIALIZED TO 1.0 IN THE HIGHEST GROUP ONLY 
+ **** WARINING **** ENERGY SPECTRAL INITIALIZED TO 1.0 IN THE HIGHEST GROUP ONLY 
+ **** WARINING **** ENERGY SPECTRAL INITIALIZED TO 1.0 IN THE HIGHEST GROUP ONLY 
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'DETECT      ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'PLATN_REGUL '        -1    DIRECTORY       
+        2  'VANAD_REGUL '        -1    DIRECTORY       
+        3  'CHION_REGUL '        -1    DIRECTORY       
+        4  'CHION_SAU   '        -1    DIRECTORY       
+        5  'SIGNATURE   '         3    CHARACTER       ='L_DETECT    '
+        6  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        43
+
+ @END MODULE -> DETINI:     
+-->>MODULE DETINI:     : TIME SPENT=        0.000 MEMORY USAGE= 2.480E+02
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> RESINI:     
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> FUEL LATTICE GEOMETRY AND PROPERTIES                                    
+ @CREDITS      -> E. VARIN, D. SEKKI, R. CHAMBON                                          
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> RESINI:     
+-->>MODULE RESINI:     : TIME SPENT=        0.000 MEMORY USAGE= 5.280E+02
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> RESINI:     
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> FUEL LATTICE GEOMETRY AND PROPERTIES                                    
+ @CREDITS      -> E. VARIN, D. SEKKI, R. CHAMBON                                          
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+
+ READING INSTANTANEOUS BURNUPS
+
+ READING BUNDLE POWERS IN KW
+
+ OPTIONS
+ -------
+ IMPX       1   (0=NO PRINT/1=SHORT/2=MORE)
+ NB        12   (NUMBER OF FUEL BUNDLES PER CHANNEL)
+ NCH      380   (NUMBER OF FUEL CHANNELS)
+ NCOMB      3   (NUMBER OF COMBUSTION ZONES)
+ NGRP       2   (NUMBER OF ENERGY GROUPS)
+ INTER      2   (TYPE OF INTERPOLATION)
+ ISHIFT     0   (NUMBER OF BUNDLE SHIFTS)
+ NFUEL      1   (NUMBER OF FUEL TYPES)
+ NPARM      0   (NUMBER OF PARAMETERS)
+ NTOT    4560   (TOTAL NUMBER OF FUEL BUNDLES)
+ IGEO       7   (7=CARTESIAN/9=HEXAGONAL)
+ NSIMS      0   (ASSEMBLY LAYOUT IN SIM: MODULE)
+ NIS        0   (NUMBER OF PARTICULARIZED ISOTOPES)
+ @END MODULE -> RESINI:     
+-->>MODULE RESINI:     : TIME SPENT=        0.000 MEMORY USAGE= 1.200E+01
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> TINST:      
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> INSTANTANEOUS CALCULATION                                               
+ @CREDITS      -> B. TOUEG                                                                
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'FMAP        ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MAP       '
+        2  'GEOMAP      '        -1    DIRECTORY       
+        3  'FUEL        '         1    LIST            
+        4  'FLMIX       '      4560    INTEGER         
+        5  'BMIX        '      9408    INTEGER         
+        6  'XNAME       '        28    CHARACTER       
+        7  'YNAME       '        28    CHARACTER       
+        8  'B-ZONE      '       380    INTEGER         
+        9  'STATE-VECTOR'        40    INTEGER         
+       10  'BURN-INST   '      4560    REAL            
+       11  'BUND-PW     '      4560    REAL            
+       12  'REACTOR-PW  '         1    REAL            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     23568
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'FMAP        ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MAP       '
+        2  'GEOMAP      '        -1    DIRECTORY       
+        3  'FUEL        '         1    LIST            
+        4  'FLMIX       '      4560    INTEGER         
+        5  'BMIX        '      9408    INTEGER         
+        6  'XNAME       '        28    CHARACTER       
+        7  'YNAME       '        28    CHARACTER       
+        8  'B-ZONE      '       380    INTEGER         
+        9  'STATE-VECTOR'        40    INTEGER         
+       10  'BURN-INST   '      4560    REAL            
+       11  'BUND-PW     '      4560    REAL            
+       12  'REACTOR-PW  '         1    REAL            
+       13  '_TINST      '         1    LIST            
+       14  'ISHIFT      '      4560    INTEGER         
+       15  'BSHIFT 1    '      4560    REAL            
+       16  'PSHIFT 1    '      4560    REAL            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =     37248
+
+ @END MODULE -> TINST:      
+-->>MODULE TINST:      : TIME SPENT=        0.000 MEMORY USAGE= 7.200E+01
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'CPOREFL     ' WAS IMPORTED FROM FILE 'REFL        '.
+
+ DRVEQU: 1995 SPECIFICATION IMPORT.
+-->>module EQU:        : time spent=        0.000 memory usage= 2.800E+01
+->@END MODULE   : EQU:        
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> CRE:        
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> ACCESS MONO-PARAMETER REACTOR COMPOSITION DATABASE                      
+ @CREDITS      -> A. HEBERT, D. SEKKI                                                     
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'CPOREFL     ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_COMPO     '
+        2  'MIXTMOD    1'        -1    DIRECTORY       
+        3  'STATE-VECTOR'        20    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        23
+
+
+ CREXSR: ACCESS DIRECTORY 'MIXTMOD    1' IN COMPO FILE 'CPOREFL     '.
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '            ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'NTOT0       '        60    REAL            
+        2  'NUSIGF      '        60    REAL            
+        3  'NFTOT       '        60    REAL            
+        4  'CHI         '        60    REAL            
+        5  'OVERV       '        60    REAL            
+        6  'DIFF        '        60    REAL            
+        7  'H-FACTOR    '        60    REAL            
+        8  'SCAT00      '        61    REAL            
+        9  'IPOS00      '        60    INTEGER         
+       10  'NJJS00      '        60    INTEGER         
+       11  'IJJS00      '        60    INTEGER         
+       12  'SIGW00      '        60    REAL            
+       13  'SCAT01      '        60    REAL            
+       14  'IPOS01      '        60    INTEGER         
+       15  'NJJS01      '        60    INTEGER         
+       16  'IJJS01      '        60    INTEGER         
+       17  'SIGW01      '        60    REAL            
+       18  'SIGS00      '        60    REAL            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '            ' =      1081
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '            ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'NTOT0       '        60    REAL            
+        2  'NUSIGF      '        60    REAL            
+        3  'NFTOT       '        60    REAL            
+        4  'CHI         '        60    REAL            
+        5  'OVERV       '        60    REAL            
+        6  'DIFF        '        60    REAL            
+        7  'H-FACTOR    '        60    REAL            
+        8  'SCAT00      '        61    REAL            
+        9  'IPOS00      '        60    INTEGER         
+       10  'NJJS00      '        60    INTEGER         
+       11  'IJJS00      '        60    INTEGER         
+       12  'SIGW00      '        60    REAL            
+       13  'SCAT01      '        60    REAL            
+       14  'IPOS01      '        60    INTEGER         
+       15  'NJJS01      '        60    INTEGER         
+       16  'IJJS01      '        60    INTEGER         
+       17  'SIGW01      '        60    REAL            
+       18  'SIGS00      '        60    REAL            
+       19  'SIGS01      '        60    REAL            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '            ' =      1141
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '            ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'NTOT0       '        60    REAL            
+        2  'NUSIGF      '        60    REAL            
+        3  'NFTOT       '        60    REAL            
+        4  'CHI         '        60    REAL            
+        5  'OVERV       '        60    REAL            
+        6  'DIFF        '        60    REAL            
+        7  'H-FACTOR    '        60    REAL            
+        8  'SCAT00      '        61    REAL            
+        9  'IPOS00      '        60    INTEGER         
+       10  'NJJS00      '        60    INTEGER         
+       11  'IJJS00      '        60    INTEGER         
+       12  'SIGW00      '        60    REAL            
+       13  'SCAT01      '        60    REAL            
+       14  'IPOS01      '        60    INTEGER         
+       15  'NJJS01      '        60    INTEGER         
+       16  'IJJS01      '        60    INTEGER         
+       17  'SIGW01      '        60    REAL            
+       18  'SIGS00      '        60    REAL            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '            ' =      1081
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '            ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'NTOT0       '        60    REAL            
+        2  'NUSIGF      '        60    REAL            
+        3  'NFTOT       '        60    REAL            
+        4  'CHI         '        60    REAL            
+        5  'OVERV       '        60    REAL            
+        6  'DIFF        '        60    REAL            
+        7  'H-FACTOR    '        60    REAL            
+        8  'SCAT00      '        61    REAL            
+        9  'IPOS00      '        60    INTEGER         
+       10  'NJJS00      '        60    INTEGER         
+       11  'IJJS00      '        60    INTEGER         
+       12  'SIGW00      '        60    REAL            
+       13  'SCAT01      '        60    REAL            
+       14  'IPOS01      '        60    INTEGER         
+       15  'NJJS01      '        60    INTEGER         
+       16  'IJJS01      '        60    INTEGER         
+       17  'SIGW01      '        60    REAL            
+       18  'SIGS00      '        60    REAL            
+       19  'SIGS01      '        60    REAL            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '            ' =      1141
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+        2  'GROUP       '         2    LIST            
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =         3
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'MACRO       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'SIGNATURE   '         3    CHARACTER       ='L_MACROLIB  '
+        2  'GROUP       '         2    LIST            
+        3  'STATE-VECTOR'        40    INTEGER         
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =        43
+
+ @END MODULE -> CRE:        
+-->>MODULE CRE:        : TIME SPENT=        0.000 MEMORY USAGE= 6.800E+01
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'GT          ' WAS IMPORTED FROM FILE 'GTUBEB      '.
+
+ DRVEQU: 1995 SPECIFICATION IMPORT.
+-->>module EQU:        : time spent=        0.000 memory usage= 8.000E+00
+->@END MODULE   : EQU:        
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'STRUC       ' WAS IMPORTED FROM FILE 'MATSTRB     '.
+
+ DRVEQU: 1995 SPECIFICATION IMPORT.
+-->>module EQU:        : time spent=        0.000 memory usage= 1.800E+02
+->@END MODULE   : EQU:        
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'ZCR         ' WAS IMPORTED FROM FILE 'ZCPOB       '.
+
+ DRVEQU: 1995 SPECIFICATION IMPORT.
+-->>module EQU:        : time spent=        0.000 memory usage= 1.400E+02
+->@END MODULE   : EQU:        
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'ADJ         ' WAS IMPORTED FROM FILE 'RODB        '.
+
+ DRVEQU: 1995 SPECIFICATION IMPORT.
+-->>module EQU:        : time spent=        0.000 memory usage= 1.840E+02
+->@END MODULE   : EQU:        
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> CRE:        
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> ACCESS MONO-PARAMETER REACTOR COMPOSITION DATABASE                      
+ @CREDITS      -> A. HEBERT, D. SEKKI                                                     
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> CRE:        
+-->>MODULE CRE:        : TIME SPENT=        0.000 MEMORY USAGE= 0.000E+00
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> CRE:        
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> ACCESS MONO-PARAMETER REACTOR COMPOSITION DATABASE                      
+ @CREDITS      -> A. HEBERT, D. SEKKI                                                     
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> CRE:        
+-->>MODULE CRE:        : TIME SPENT=        0.000 MEMORY USAGE= 4.000E+00
+->@BEGIN MODULE : EQU:        
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+ DRVEQU: A LCM OBJECT NAMED 'CPOFUEL     ' WAS IMPORTED FROM FILE 'CELNAT      '.
+
+ DRVEQU: 1995 SPECIFICATION IMPORT.
+-->>module EQU:        : time spent=        0.000 memory usage= 3.800E+02
+->@END MODULE   : EQU:        
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> CRE:        
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> ACCESS MONO-PARAMETER REACTOR COMPOSITION DATABASE                      
+ @CREDITS      -> A. HEBERT, D. SEKKI                                                     
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> CRE:        
+-->>MODULE CRE:        : TIME SPENT=        0.000 MEMORY USAGE= 1.460E+03
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> MACINI:     
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> EXPAND MACROLIB OVER THE REACTOR GEOMETRY                               
+ @CREDITS      -> J. KOCLAS, E. VARIN, D. SEKKI                                           
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> MACINI:     
+-->>MODULE MACINI:     : TIME SPENT=        0.000 MEMORY USAGE= 5.152E+03
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> NEWMAC:     
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> UPDATE MACROLIB FOR DEVICES PROPERTIES                                  
+ @CREDITS      -> J. KOCLAS, D. SEKKI                                                     
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ @END MODULE -> NEWMAC:     
+-->>MODULE NEWMAC:     : TIME SPENT=        0.000 MEMORY USAGE= 5.196E+03
+->@BEGIN MODULE : TRIVAA:     
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ EXEC: TRIVAA:      BY A. HEBERT
+-->>MODULE TRIVAA:     : TIME SPENT=        0.000 MEMORY USAGE= 3.328E+03
+->@END MODULE   : TRIVAA:     
+->@BEGIN MODULE : FLUD:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+
+
+ EXEC: FLUD:        BY A. HEBERT
+-->>MODULE FLUD:       : TIME SPENT=        1.000 MEMORY USAGE= 1.240E+02
+->@END MODULE   : FLUD:       
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> FLPOW:      
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> COMPUTE FLUXES AND POWERS                                               
+ @CREDITS      -> D. SEKKI                                                                
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ FLPDRV: default option for L_FLUX object is NORM.
+
+ FLPNRM: ** NORMALIZING FLUXES TO A GIVEN REACTOR POWER **
+
+ FLPNRM: GIVEN TOTAL REACTOR POWER => 2.06139994E+09 WATTS
+ FLPNRM: FLUX NORMALIZATION FACTOR => 1.65181130E+20
+
+ ** COMPUTING FLUX-DISTRIBUTION OVER THE REACTOR CORE **
+
+ MAX FLUX = 3.512047E+14    AT COORD : I = 35  J = 18  K = 10  GROUP #02
+
+ CORE-AVERAGE FLUX = 5.762113E+13  =>  GROUP #01
+ CORE-AVERAGE FLUX = 1.527002E+14  =>  GROUP #02
+
+ OVERALL FLUX-FORM FACTOR FOR GROUP #02  =>  AVG/MAX =   0.4348  (MAX/AVG =   2.3000)
+ TOTAL CORE VOLUME = 2.511735E+08 CM3
+
+
+ ** COMPUTING POWER-DISTRIBUTION OVER THE REACTOR CORE **
+
+ COMPUTED TOTAL POWER : 2.06139990E+09 WATTS
+ MEAN POWER DENSITY   : 8.20707607E+00 WATTS/CM3
+
+ MAX POWER = 7.341393E+05 WATTS    AT COORD : I = 37  J = 17  K =  8
+
+
+ ** COMPUTING AVERAGE BUNDLE FLUXES **
+
+ MAX FLUX = 3.500668E+14  =>  CHANNEL #252  BUNDLE #06  GROUP #02
+
+ FUEL-ZONE AVERAGE FLUX = 7.736992E+13   =>  GROUP #01
+ FUEL-ZONE AVERAGE FLUX = 1.836017E+14   =>  GROUP #02
+
+ FLUX-FORM FACTOR FOR GROUP #02  =>  AVG/MAX =   0.5245  (MAX/AVG =   1.9067)
+ FUEL-ZONE VOLUME = 1.844217E+08 CM3
+
+
+ ** COMPUTING CHANNEL AND BUNDLE POWERS **
+
+
+
+                    ** CHANNEL POWERS IN RADIAL PLANE (kW) **
+
+         -          -          -          01         02         03         04         05         06         07         08         09         10         11  
+  
+ A       0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000   3313.447   3480.684   3389.099
+ B       0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000   2676.175   3493.592   4053.883   4453.168   4399.819   4806.856
+ C       0.000      0.000      0.000      0.000      0.000      0.000      0.000   3220.266   3926.565   4298.849   5055.075   5096.455   5683.127   5713.860
+ D       0.000      0.000      0.000      0.000      0.000      0.000   3479.128   4011.141   4738.645   5145.073   5842.960   5799.311   6268.262   6276.654
+ E       0.000      0.000      0.000      0.000      0.000   3296.658   4325.698   5027.335   5639.600   5808.792   6119.453   6277.094   6256.984   6281.923
+ F       0.000      0.000      0.000      0.000      0.000   4136.724   4719.727   5490.539   6126.174   6556.375   6633.261   6157.259   6551.711   6307.187
+ G       0.000      0.000      0.000      0.000   3610.270   4563.393   5595.056   5978.245   6264.956   6603.979   6796.696   6634.626   6491.544   6281.740
+ H       0.000      0.000      0.000      0.000   4128.486   4859.957   5833.853   5815.353   6340.412   6572.880   6262.034   6084.205   6372.346   6251.636
+ J       0.000      0.000      0.000   3219.673   4145.778   5410.610   5829.570   6166.340   6504.036   6086.474   6427.458   6600.402   6673.883   6800.972
+ K       0.000      0.000      0.000   3425.497   4705.667   5783.755   5988.476   6422.442   6495.983   6149.396   6174.686   6279.797   6301.066   6724.839
+ L       0.000      0.000      0.000   3766.195   4831.606   5989.392   6588.925   6406.546   6582.759   6676.574   6469.275   6450.268   6094.833   6523.168
+ M       0.000      0.000      0.000   3696.880   4903.853   5814.715   6133.978   6598.236   6732.963   6400.780   6678.940   6308.244   6543.596   6369.209
+ N       0.000      0.000      0.000   3669.580   5003.324   5985.382   6498.970   6215.260   6195.768   6583.633   6634.543   6140.207   6626.073   6611.358
+ O       0.000      0.000      0.000   3034.216   4535.162   5462.957   5813.350   6449.702   6426.961   6675.573   6610.660   6400.033   6226.501   6329.993
+ P       0.000      0.000      0.000      0.000   4007.167   5203.813   5996.547   6148.882   6118.083   6168.829   6406.854   6086.175   6254.843   6711.283
+ Q       0.000      0.000      0.000      0.000   3565.252   4656.966   5442.155   5364.150   6039.918   6414.461   6485.981   6458.800   6376.515   6471.269
+ R       0.000      0.000      0.000      0.000      0.000   3708.838   4576.945   5104.000   5508.966   6065.399   5852.378   5855.562   5898.651   6400.679
+ S       0.000      0.000      0.000      0.000      0.000   3125.070   4001.991   4513.576   4837.806   5562.320   5706.546   5990.737   6252.521   6286.563
+ T       0.000      0.000      0.000      0.000      0.000      0.000   3008.203   3684.055   4172.215   4801.227   5101.508   5514.133   5473.157   5554.247
+ U       0.000      0.000      0.000      0.000      0.000      0.000      0.000   2750.031   3339.638   3952.174   4120.638   4420.539   4257.972   4406.603
+ V       0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000   2108.725   2772.188   3155.005   3570.063   3753.960   3807.485
+ W       0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000   2376.140   2574.175   2666.313
+  
+         12         13         14         15         16         17         18         19         20         21         22         -          -          -   
+  
+ A    3608.097   3610.258   3409.146      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000
+ B    4849.108   4604.136   4638.690   4173.999   3695.676   2951.701      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000
+ C    5513.364   5716.079   5638.285   5163.624   4747.273   3768.543   3272.743      0.000      0.000      0.000      0.000      0.000      0.000      0.000
+ D    6024.709   6350.608   6268.904   6039.946   5534.605   4846.225   4098.886   3060.325      0.000      0.000      0.000      0.000      0.000      0.000
+ E    5945.249   6225.962   6696.385   6361.942   6228.751   5341.535   4635.689   3807.911   3255.181      0.000      0.000      0.000      0.000      0.000
+ F    6572.534   6600.279   6674.690   6310.853   6519.158   6014.939   5402.866   4862.156   4061.112      0.000      0.000      0.000      0.000      0.000
+ G    6666.061   6454.267   6322.866   6733.104   6361.045   6251.479   5360.260   5389.810   4572.995   3567.846      0.000      0.000      0.000      0.000
+ H    6643.532   6723.236   6560.831   6734.724   6720.397   6259.540   5797.795   5497.367   5033.883   3910.115      0.000      0.000      0.000      0.000
+ J    6844.882   6371.640   6697.092   6261.164   6108.284   6411.447   6255.003   5628.080   5342.013   4020.802   3073.143      0.000      0.000      0.000
+ K    6601.127   6442.366   6622.877   6490.154   6081.698   6451.517   6024.190   6109.651   5749.170   4465.903   3510.771      0.000      0.000      0.000
+ L    6726.673   6667.757   6394.572   6747.042   6425.184   6522.020   6678.326   6573.836   5688.596   4922.446   3619.032      0.000      0.000      0.000
+ M    6409.418   6697.341   6545.410   6854.609   6738.900   6455.488   6964.502   6782.188   5890.677   4721.212   3693.896      0.000      0.000      0.000
+ N    6676.702   6672.330   6311.160   6860.215   6608.930   6992.370   6798.765   6917.075   5995.191   4490.542   3232.825      0.000      0.000      0.000
+ O    6854.387   6841.067   6739.716   6448.675   6889.779   6980.569   6967.436   6705.419   5559.771   4631.424   3330.306      0.000      0.000      0.000
+ P    6682.405   6386.544   6483.454   6885.518   6625.609   6870.922   6205.562   6053.982   5017.153   4004.668      0.000      0.000      0.000      0.000
+ Q    6499.423   6678.822   6248.021   6733.996   6329.845   6353.847   6037.982   5650.522   4569.744   3583.436      0.000      0.000      0.000      0.000
+ R    6576.456   6528.910   6276.913   6305.625   6175.989   5423.962   5327.987   4887.087   4083.389      0.000      0.000      0.000      0.000      0.000
+ S    6208.244   6029.960   6148.298   5729.033   5648.521   5277.828   4587.298   3941.198   3135.432      0.000      0.000      0.000      0.000      0.000
+ T    5306.090   5500.763   5638.777   5415.284   5031.035   4412.161   3871.842   2988.148      0.000      0.000      0.000      0.000      0.000      0.000
+ U    4732.371   4395.622   4342.057   4118.960   4050.120   3475.358   2864.162      0.000      0.000      0.000      0.000      0.000      0.000      0.000
+ V    3883.970   3778.769   3556.896   3222.266   2859.095   2104.654      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000
+ W    2700.483   2571.760   2285.475      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000      0.000
+
+     --o--      --o--      --o--      --o--      --o--
+
+
+ MAXIMUM BUNDLE POWER  =     884.9 kW   =>   CHANNEL: O 18   BUNDLE #06
+ AVERAGE POWER OVER ALL BUNDLES =     452.1 kW
+ BUNDLE-POWER FORM FACTOR  =>  AVG/MAX =   0.5109   (MAX/AVG =   1.9575)
+
+ MAXIMUM CHANNEL POWER =    6992.4 kW   =>   CHANNEL: N 17
+ AVERAGE POWER OVER ALL CHANNELS =    5424.7 kW
+ CHANNEL-POWER FORM FACTOR  =>  AVG/MAX =   0.7758  (MAX/AVG =   1.2890)
+
+
+
+ LCMLIB: CONTENT OF ACTIVE DIRECTORY '/           ' OF THE TABLE    'POWER       ':
+
+     BLOCK NAME----------    LENGTH    TYPE
+
+        1  'NORM        '         1    DOUBLE PRECISION
+        2  'FLUX        '     58080    REAL            
+        3  'PTOT        '         1    DOUBLE PRECISION
+        4  'VTOT        '         1    DOUBLE PRECISION
+        5  'FLUX-DISTR  '     58080    REAL            
+        6  'FLUX-RATIO  '     29040    REAL            
+        7  'POWER-DISTR '     29040    REAL            
+        8  'K-EFFECTIVE '         1    REAL            
+        9  'PMAX-BUND   '         1    REAL            
+       10  'FORM-BUND   '         1    REAL            
+       11  'PMAX-CHAN   '         1    REAL            
+       12  'FORM-CHAN   '         1    REAL            
+       13  'POWER-CHAN  '       380    REAL            
+       14  'POWER-BUND  '      4560    REAL            
+       15  'VOLU-BUND   '      4560    REAL            
+       16  'FLUX-BUND   '      9120    REAL            
+       17  'FLMIX       '      4560    INTEGER         
+       18  'STATE-VECTOR'        40    INTEGER         
+       19  'SIGNATURE   '         3    CHARACTER       ='L_POWER     '
+
+
+ TOTAL NUMBER OF WORDS ON DIRECTORY '/           ' =    197471
+
+ @END MODULE -> FLPOW:      
+-->>MODULE FLPOW:      : TIME SPENT=        0.000 MEMORY USAGE= 6.800E+01
+
+ ~~~~~~~~~~~~~~~
+ @BEGIN MODULE -> DETECT:     
+ @FROM CODE    -> DONJON      
+ @DESCRIPTION  -> COMPUTE DETECTORS READING                                               
+ @CREDITS      -> J. KOCLAS, M. GUYOT                                                     
+ @COPYRIGHTS   -> ECOLE POLYTECHNIQUE DE MONTREAL
+                  GNU LESSER GENERAL PUBLIC LICENSE
+ ~~~~~~~~~~~~~~~
+
+ DETECT: CALCULATION TYPE REFERENCE, KC =            0
+ DETECT: TIME STEP USED, DT =   0.250000000    
+ NAME DETECTOR VANA002     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  211.4000  204.2563  218.5437  189.9688  354.2750  368.5625  339.9875  311.4125  125.8650  124.5650  149.3300  101.7350
+                    000010    000011    000009              000015    000014    000013              000004    000005    000003
+ RESP, REF    2.31163763E+14   2.31163763E+14
+ NAME DETECTOR VANA003     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  211.4000  204.2563  218.5437  189.9688  411.4250  397.1375  425.7125  368.5625  125.8650  124.5650  149.3300  101.7350
+                    000010    000011    000009              000016    000017    000015              000004    000005    000003
+ RESP, REF    2.33075175E+14   2.33075175E+14
+ NAME DETECTOR VANA004     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  211.4000  204.2563  218.5437  189.9688  582.8750  597.1625  568.5875  625.7375  125.8650  124.5650  149.3300  101.7350
+                    000010    000011    000009              000023    000022    000024              000004    000005    000003
+ RESP, REF    1.42616839E+14   1.42616839E+14
+ NAME DETECTOR VANA005     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  382.8500  375.7062  389.9938  361.4188  154.2500  168.5375  139.9625  197.1125  120.7850  124.5650  101.7350  149.3300
+                    000022    000023    000021              000008    000007    000009              000004    000003    000005
+ RESP, REF    1.94317944E+14   1.94317944E+14
+ NAME DETECTOR VANA006     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  382.8500  375.7062  389.9938  361.4188  382.8500  397.1375  368.5625  425.7125  120.7850  124.5650  101.7350  149.3300
+                    000022    000023    000021              000016    000015    000017              000004    000003    000005
+ RESP, REF    2.45761988E+14   2.45761988E+14
+ NAME DETECTOR VANA007     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  382.8500  375.7062  389.9938  361.4188  611.4500  597.1625  625.7375  568.5875  120.7850  124.5650  101.7350  149.3300
+                    000022    000023    000021              000023    000024    000022              000004    000003    000005
+ RESP, REF    1.68067909E+14   1.68067909E+14
+ NAME DETECTOR VANA008     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  554.3000  547.1562  561.4438  532.8688  182.8250  197.1125  168.5375  225.6875  125.8650  124.5650  149.3300  101.7350
+                    000034    000035    000033              000009    000008    000010              000004    000005    000003
+ RESP, REF    1.55735732E+14   1.55735732E+14
+ NAME DETECTOR VANA009     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  554.3000  547.1562  561.4438  532.8688  354.2750  368.5625  339.9875  311.4125  125.8650  124.5650  149.3300  101.7350
+                    000034    000035    000033              000015    000014    000013              000004    000005    000003
+ RESP, REF    2.25806530E+14   2.25806530E+14
+ NAME DETECTOR VANA010     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  554.3000  547.1562  561.4438  532.8688  411.4250  397.1375  425.7125  368.5625  125.8650  124.5650  149.3300  101.7350
+                    000034    000035    000033              000016    000017    000015              000004    000005    000003
+ RESP, REF    2.42850319E+14   2.42850319E+14
+ NAME DETECTOR VANA011     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  554.3000  547.1562  561.4438  532.8688  582.8750  597.1625  568.5875  625.7375  125.8650  124.5650  149.3300  101.7350
+                    000034    000035    000033              000023    000022    000024              000004    000005    000003
+ RESP, REF    1.46403574E+14   1.46403574E+14
+ NAME DETECTOR VANA012     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  154.2500  168.5375  139.9625  189.9688  268.5500  254.2625  282.8375  225.6875  201.1120  199.2125  223.9775  174.4475
+                    000008    000007    000009              000011    000012    000010              000007    000008    000006
+ RESP, REF    2.42658925E+14   2.42658925E+14
+ NAME DETECTOR VANA013     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  154.2500  168.5375  139.9625  189.9688  382.8500  397.1375  368.5625  425.7125  201.1120  199.2125  223.9775  174.4475
+                    000008    000007    000009              000016    000015    000017              000007    000008    000006
+ RESP, REF    2.82773332E+14   2.82773332E+14
+ NAME DETECTOR VANA014     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  154.2500  168.5375  139.9625  189.9688  497.1500  511.4375  482.8625  540.0125  201.1120  199.2125  223.9775  174.4475
+                    000008    000007    000009              000020    000019    000021              000007    000008    000006
+ RESP, REF    2.45561819E+14   2.45561819E+14
+ NAME DETECTOR VANA015     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  182.8250  197.1125  168.5375  225.6875  201.1120  199.2125  223.9775  174.4475
+                    000013    000012    000014              000009    000008    000010              000007    000008    000006
+ RESP, REF    2.45780611E+14   2.45780611E+14
+ NAME DETECTOR VANA016     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  297.1250  311.4125  282.8375  339.9875  201.1120  199.2125  223.9775  174.4475
+                    000013    000012    000014              000013    000012    000014              000007    000008    000006
+ RESP, REF    2.83305505E+14   2.83305505E+14
+ NAME DETECTOR VANA017     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  468.5750  482.8625  454.2875  511.4375  201.1120  199.2125  223.9775  174.4475
+                    000013    000012    000014              000019    000018    000020              000007    000008    000006
+ RESP, REF    2.81703919E+14   2.81703919E+14
+ NAME DETECTOR VANA018     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  582.8750  597.1625  568.5875  625.7375  201.1120  199.2125  223.9775  174.4475
+                    000013    000012    000014              000023    000022    000024              000007    000008    000006
+ RESP, REF    2.21281782E+14   2.21281782E+14
+ NAME DETECTOR VANA019     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  325.7000  318.5563  332.8438  347.1312  211.4000  225.6875  197.1125  168.5375  186.8250  174.4475  199.2125  223.9775
+                    000018    000019    000020              000010    000009    000008              000006    000007    000008
+ RESP, REF    2.72146425E+14   2.72146425E+14
+ NAME DETECTOR VANA020     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  325.7000  318.5563  332.8438  347.1312  325.7000  339.9875  311.4125  368.5625  186.8250  174.4475  199.2125  223.9775
+                    000018    000019    000020              000014    000013    000015              000006    000007    000008
+ RESP, REF    2.71047065E+14   2.71047065E+14
+ NAME DETECTOR VANA021     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  325.7000  318.5563  332.8438  347.1312  440.0000  454.2875  425.7125  482.8625  186.8250  174.4475  199.2125  223.9775
+                    000018    000019    000020              000018    000017    000019              000006    000007    000008
+ RESP, REF    2.68094275E+14   2.68094275E+14
+ NAME DETECTOR VANA022     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  325.7000  318.5563  332.8438  347.1312  554.3000  568.5875  540.0125  597.1625  186.8250  174.4475  199.2125  223.9775
+                    000018    000019    000020              000022    000021    000023              000006    000007    000008
+ RESP, REF    2.62364755E+14   2.62364755E+14
+ NAME DETECTOR VANA023     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  440.0000  447.1437  432.8563  461.4313  211.4000  225.6875  197.1125  168.5375  186.8250  174.4475  199.2125  223.9775
+                    000027    000026    000028              000010    000009    000008              000006    000007    000008
+ RESP, REF    2.80618416E+14   2.80618416E+14
+ NAME DETECTOR VANA024     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  440.0000  447.1437  432.8563  461.4313  325.7000  339.9875  311.4125  368.5625  186.8250  174.4475  199.2125  223.9775
+                    000027    000026    000028              000014    000013    000015              000006    000007    000008
+ RESP, REF    2.76742325E+14   2.76742325E+14
+ NAME DETECTOR VANA025     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  440.0000  447.1437  432.8563  461.4313  440.0000  454.2875  425.7125  482.8625  186.8250  174.4475  199.2125  223.9775
+                    000027    000026    000028              000018    000017    000019              000006    000007    000008
+ RESP, REF    2.81592216E+14   2.81592216E+14
+ NAME DETECTOR VANA026     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  440.0000  447.1437  432.8563  461.4313  554.3000  568.5875  540.0125  597.1625  186.8250  174.4475  199.2125  223.9775
+                    000027    000026    000028              000022    000021    000023              000006    000007    000008
+ RESP, REF    2.71817961E+14   2.71817961E+14
+ NAME DETECTOR VANA027     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  182.8250  197.1125  168.5375  225.6875  201.1120  199.2125  223.9775  174.4475
+                    000032    000033    000031              000009    000008    000010              000007    000008    000006
+ RESP, REF    2.51881981E+14   2.51881981E+14
+ NAME DETECTOR VANA028     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  297.1250  311.4125  282.8375  339.9875  201.1120  199.2125  223.9775  174.4475
+                    000032    000033    000031              000013    000012    000014              000007    000008    000006
+ RESP, REF    2.79651797E+14   2.79651797E+14
+ NAME DETECTOR VANA029     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  468.5750  482.8625  454.2875  511.4375  201.1120  199.2125  223.9775  174.4475
+                    000032    000033    000031              000019    000018    000020              000007    000008    000006
+ RESP, REF    3.08498139E+14   3.08498139E+14
+ NAME DETECTOR VANA030     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  582.8750  597.1625  568.5875  625.7375  201.1120  199.2125  223.9775  174.4475
+                    000032    000033    000031              000023    000022    000024              000007    000008    000006
+ RESP, REF    2.31400087E+14   2.31400087E+14
+ NAME DETECTOR VANA031     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  611.4500  625.7375  597.1625  575.7313  268.5500  254.2625  282.8375  225.6875  201.1120  199.2125  223.9775  174.4475
+                    000038    000037    000036              000011    000012    000010              000007    000008    000006
+ RESP, REF    2.37206346E+14   2.37206346E+14
+ NAME DETECTOR VANA032     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  611.4500  625.7375  597.1625  575.7313  382.8500  397.1375  368.5625  425.7125  201.1120  199.2125  223.9775  174.4475
+                    000038    000037    000036              000016    000015    000017              000007    000008    000006
+ RESP, REF    2.90134705E+14   2.90134705E+14
+ NAME DETECTOR VANA033     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  611.4500  625.7375  597.1625  575.7313  497.1500  511.4375  482.8625  540.0125  201.1120  199.2125  223.9775  174.4475
+                    000038    000037    000036              000020    000019    000021              000007    000008    000006
+ RESP, REF    2.49571926E+14   2.49571926E+14
+ NAME DETECTOR VANA034     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  182.8250  189.9688  168.5375  204.2563  239.9750  254.2625  225.6875  282.8375  301.1250  313.5075  288.7425  338.2725
+                    000009    000008    000010              000011    000010    000012              000012    000011    000013
+ RESP, REF    3.00204289E+14   3.00204289E+14
+ NAME DETECTOR VANA035     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  182.8250  189.9688  168.5375  204.2563  354.2750  368.5625  339.9875  311.4125  301.1250  313.5075  288.7425  338.2725
+                    000009    000008    000010              000015    000014    000013              000012    000011    000013
+ RESP, REF    3.27508570E+14   3.27508570E+14
+ NAME DETECTOR VANA036     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  182.8250  189.9688  168.5375  204.2563  411.4250  397.1375  425.7125  368.5625  301.1250  313.5075  288.7425  338.2725
+                    000009    000008    000010              000016    000017    000015              000012    000011    000013
+ RESP, REF    3.23948043E+14   3.23948043E+14
+ NAME DETECTOR VANA037     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  182.8250  189.9688  168.5375  204.2563  554.3000  568.5875  540.0125  597.1625  301.1250  313.5075  288.7425  338.2725
+                    000009    000008    000010              000022    000021    000023              000012    000011    000013
+ RESP, REF    2.53905078E+14   2.53905078E+14
+ NAME DETECTOR VANA038     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  211.4000  225.6875  197.1125  168.5375  301.1250  313.5075  288.7425  338.2725
+                    000013    000012    000014              000010    000009    000008              000012    000011    000013
+ RESP, REF    3.13013257E+14   3.13013257E+14
+ NAME DETECTOR VANA039     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  325.7000  339.9875  311.4125  368.5625  301.1250  313.5075  288.7425  338.2725
+                    000013    000012    000014              000014    000013    000015              000012    000011    000013
+ RESP, REF    3.15281436E+14   3.15281436E+14
+ NAME DETECTOR VANA040     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  440.0000  454.2875  425.7125  482.8625  301.1250  313.5075  288.7425  338.2725
+                    000013    000012    000014              000018    000017    000019              000012    000011    000013
+ RESP, REF    3.17341041E+14   3.17341041E+14
+ NAME DETECTOR VANA041     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  611.4500  597.1625  625.7375  568.5875  301.1250  313.5075  288.7425  338.2725
+                    000013    000012    000014              000023    000024    000022              000012    000011    000013
+ RESP, REF    2.13876554E+14   2.13876554E+14
+ NAME DETECTOR VANA042     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  297.1250  289.9813  304.2688  275.6937  154.2500  168.5375  139.9625  197.1125  301.1250  313.5075  288.7425  338.2725
+                    000016    000017    000015              000008    000007    000009              000012    000011    000013
+ RESP, REF    2.84914977E+14   2.84914977E+14
+ NAME DETECTOR VANA043     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  297.1250  289.9813  304.2688  275.6937  297.1250  311.4125  282.8375  339.9875  301.1250  313.5075  288.7425  338.2725
+                    000016    000017    000015              000013    000012    000014              000012    000011    000013
+ RESP, REF    2.93561350E+14   2.93561350E+14
+ NAME DETECTOR VANA044     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  297.1250  289.9813  304.2688  275.6937  382.8500  397.1375  368.5625  425.7125  301.1250  313.5075  288.7425  338.2725
+                    000016    000017    000015              000016    000015    000017              000012    000011    000013
+ RESP, REF    2.87916153E+14   2.87916153E+14
+ NAME DETECTOR VANA045     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  297.1250  289.9813  304.2688  275.6937  468.5750  482.8625  454.2875  511.4375  301.1250  313.5075  288.7425  338.2725
+                    000016    000017    000015              000019    000018    000020              000012    000011    000013
+ RESP, REF    2.91276763E+14   2.91276763E+14
+ NAME DETECTOR VANA046     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  297.1250  289.9813  304.2688  275.6937  525.7250  540.0125  511.4375  482.8625  301.1250  313.5075  288.7425  338.2725
+                    000016    000017    000015              000021    000020    000019              000012    000011    000013
+ RESP, REF    3.00439774E+14   3.00439774E+14
+ NAME DETECTOR VANA047     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  354.2750  361.4188  347.1312  375.7062  182.8250  197.1125  168.5375  225.6875  341.1300  338.2725  353.5075  313.5075
+                    000021    000020    000022              000009    000008    000010              000013    000014    000012
+ RESP, REF    3.19092783E+14   3.19092783E+14
+ NAME DETECTOR VANA048     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  354.2750  361.4188  347.1312  375.7062  268.5500  254.2625  282.8375  225.6875  341.1300  338.2725  353.5075  313.5075
+                    000021    000020    000022              000011    000012    000010              000013    000014    000012
+ RESP, REF    3.00786760E+14   3.00786760E+14
+ NAME DETECTOR VANA049     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  354.2750  361.4188  347.1312  375.7062  382.8500  397.1375  368.5625  425.7125  341.1300  338.2725  353.5075  313.5075
+                    000021    000020    000022              000016    000015    000017              000013    000014    000012
+ RESP, REF    2.97006115E+14   2.97006115E+14
+ NAME DETECTOR VANA050     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  354.2750  361.4188  347.1312  375.7062  497.1500  511.4375  482.8625  540.0125  341.1300  338.2725  353.5075  313.5075
+                    000021    000020    000022              000020    000019    000021              000013    000014    000012
+ RESP, REF    3.02704195E+14   3.02704195E+14
+ NAME DETECTOR VANA051     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  354.2750  361.4188  347.1312  375.7062  582.8750  597.1625  568.5875  625.7375  341.1300  338.2725  353.5075  313.5075
+                    000021    000020    000022              000023    000022    000024              000013    000014    000012
+ RESP, REF    2.97592378E+14   2.97592378E+14
+ NAME DETECTOR VANA052     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  411.4250  404.2813  418.5687  389.9938  182.8250  197.1125  168.5375  225.6875  261.1200  263.9775  248.7425  288.7425
+                    000024    000025    000023              000009    000008    000010              000010    000009    000011
+ RESP, REF    3.16100600E+14   3.16100600E+14
+ NAME DETECTOR VANA053     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  411.4250  404.2813  418.5687  389.9938  268.5500  254.2625  282.8375  225.6875  261.1200  263.9775  248.7425  288.7425
+                    000024    000025    000023              000011    000012    000010              000010    000009    000011
+ RESP, REF    3.15795792E+14   3.15795792E+14
+ NAME DETECTOR VANA054     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  411.4250  404.2813  418.5687  389.9938  382.8500  397.1375  368.5625  425.7125  261.1200  263.9775  248.7425  288.7425
+                    000024    000025    000023              000016    000015    000017              000010    000009    000011
+ RESP, REF    3.10368027E+14   3.10368027E+14
+ NAME DETECTOR VANA055     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  411.4250  404.2813  418.5687  389.9938  497.1500  511.4375  482.8625  540.0125  261.1200  263.9775  248.7425  288.7425
+                    000024    000025    000023              000020    000019    000021              000010    000009    000011
+ RESP, REF    3.22390714E+14   3.22390714E+14
+ NAME DETECTOR VANA056     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  411.4250  404.2813  418.5687  389.9938  582.8750  597.1625  568.5875  625.7375  261.1200  263.9775  248.7425  288.7425
+                    000024    000025    000023              000023    000022    000024              000010    000009    000011
+ RESP, REF    2.99981722E+14   2.99981722E+14
+ NAME DETECTOR VANA057     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  468.5750  475.7188  461.4313  490.0062  154.2500  168.5375  139.9625  197.1125  301.1250  313.5075  288.7425  338.2725
+                    000029    000028    000030              000008    000007    000009              000012    000011    000013
+ RESP, REF    3.03154428E+14   3.03154428E+14
+ NAME DETECTOR VANA058     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  468.5750  475.7188  461.4313  490.0062  297.1250  311.4125  282.8375  339.9875  301.1250  313.5075  288.7425  338.2725
+                    000029    000028    000030              000013    000012    000014              000012    000011    000013
+ RESP, REF    2.99335598E+14   2.99335598E+14
+ NAME DETECTOR VANA059     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  468.5750  475.7188  461.4313  490.0062  382.8500  397.1375  368.5625  425.7125  301.1250  313.5075  288.7425  338.2725
+                    000029    000028    000030              000016    000015    000017              000012    000011    000013
+ RESP, REF    2.96540782E+14   2.96540782E+14
+ NAME DETECTOR VANA060     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  468.5750  475.7188  461.4313  490.0062  468.5750  482.8625  454.2875  511.4375  301.1250  313.5075  288.7425  338.2725
+                    000029    000028    000030              000019    000018    000020              000012    000011    000013
+ RESP, REF    3.05145884E+14   3.05145884E+14
+ NAME DETECTOR VANA061     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  468.5750  475.7188  461.4313  490.0062  525.7250  540.0125  511.4375  482.8625  301.1250  313.5075  288.7425  338.2725
+                    000029    000028    000030              000021    000020    000019              000012    000011    000013
+ RESP, REF    3.06393471E+14   3.06393471E+14
+ NAME DETECTOR VANA062     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  211.4000  225.6875  197.1125  168.5375  301.1250  313.5075  288.7425  338.2725
+                    000032    000033    000031              000010    000009    000008              000012    000011    000013
+ RESP, REF    3.15799617E+14   3.15799617E+14
+ NAME DETECTOR VANA063     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  325.7000  339.9875  311.4125  368.5625  301.1250  313.5075  288.7425  338.2725
+                    000032    000033    000031              000014    000013    000015              000012    000011    000013
+ RESP, REF    3.11020392E+14   3.11020392E+14
+ NAME DETECTOR VANA064     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  440.0000  454.2875  425.7125  482.8625  301.1250  313.5075  288.7425  338.2725
+                    000032    000033    000031              000018    000017    000019              000012    000011    000013
+ RESP, REF    3.32546903E+14   3.32546903E+14
+ NAME DETECTOR VANA065     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  611.4500  597.1625  625.7375  568.5875  301.1250  313.5075  288.7425  338.2725
+                    000032    000033    000031              000023    000024    000022              000012    000011    000013
+ RESP, REF    2.24026954E+14   2.24026954E+14
+ NAME DETECTOR VANA066     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  582.8750  575.7313  597.1625  561.4438  239.9750  254.2625  225.6875  282.8375  301.1250  313.5075  288.7425  338.2725
+                    000036    000037    000035              000011    000010    000012              000012    000011    000013
+ RESP, REF    2.87323917E+14   2.87323917E+14
+ NAME DETECTOR VANA067     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  582.8750  575.7313  597.1625  561.4438  354.2750  368.5625  339.9875  311.4125  301.1250  313.5075  288.7425  338.2725
+                    000036    000037    000035              000015    000014    000013              000012    000011    000013
+ RESP, REF    3.24240000E+14   3.24240000E+14
+ NAME DETECTOR VANA068     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  582.8750  575.7313  597.1625  561.4438  411.4250  397.1375  425.7125  368.5625  301.1250  313.5075  288.7425  338.2725
+                    000036    000037    000035              000016    000017    000015              000012    000011    000013
+ RESP, REF    3.50210425E+14   3.50210425E+14
+ NAME DETECTOR VANA069     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  582.8750  575.7313  597.1625  561.4438  554.3000  568.5875  540.0125  597.1625  301.1250  313.5075  288.7425  338.2725
+                    000036    000037    000035              000022    000021    000023              000012    000011    000013
+ RESP, REF    2.56576011E+14   2.56576011E+14
+ NAME DETECTOR VANA070     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  154.2500  168.5375  139.9625  189.9688  268.5500  254.2625  282.8375  225.6875  401.1380  403.0375  378.2725  427.8025
+                    000008    000007    000009              000011    000012    000010              000016    000015    000017
+ RESP, REF    2.36547304E+14   2.36547304E+14
+ NAME DETECTOR VANA071     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  154.2500  168.5375  139.9625  189.9688  382.8500  397.1375  368.5625  425.7125  401.1380  403.0375  378.2725  427.8025
+                    000008    000007    000009              000016    000015    000017              000016    000015    000017
+ RESP, REF    2.72855615E+14   2.72855615E+14
+ NAME DETECTOR VANA072     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  154.2500  168.5375  139.9625  189.9688  497.1500  511.4375  482.8625  540.0125  401.1380  403.0375  378.2725  427.8025
+                    000008    000007    000009              000020    000019    000021              000016    000015    000017
+ RESP, REF    2.38834642E+14   2.38834642E+14
+ NAME DETECTOR VANA073     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  182.8250  197.1125  168.5375  225.6875  401.1380  403.0375  378.2725  427.8025
+                    000013    000012    000014              000009    000008    000010              000016    000015    000017
+ RESP, REF    2.40364120E+14   2.40364120E+14
+ NAME DETECTOR VANA074     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  297.1250  311.4125  282.8375  339.9875  401.1380  403.0375  378.2725  427.8025
+                    000013    000012    000014              000013    000012    000014              000016    000015    000017
+ RESP, REF    2.71115247E+14   2.71115247E+14
+ NAME DETECTOR VANA075     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  468.5750  482.8625  454.2875  511.4375  401.1380  403.0375  378.2725  427.8025
+                    000013    000012    000014              000019    000018    000020              000016    000015    000017
+ RESP, REF    2.75233584E+14   2.75233584E+14
+ NAME DETECTOR VANA076     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  239.9750  247.1187  232.8313  261.4062  582.8750  597.1625  568.5875  625.7375  401.1380  403.0375  378.2725  427.8025
+                    000013    000012    000014              000023    000022    000024              000016    000015    000017
+ RESP, REF    2.14993748E+14   2.14993748E+14
+ NAME DETECTOR VANA077     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  325.7000  318.5563  332.8438  347.1312  211.4000  225.6875  197.1125  168.5375  415.4250  427.8025  403.0375  378.2725
+                    000018    000019    000020              000010    000009    000008              000017    000016    000015
+ RESP, REF    2.61541094E+14   2.61541094E+14
+ NAME DETECTOR VANA078     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  325.7000  318.5563  332.8438  347.1312  325.7000  339.9875  311.4125  368.5625  415.4250  427.8025  403.0375  378.2725
+                    000018    000019    000020              000014    000013    000015              000017    000016    000015
+ RESP, REF    2.60132210E+14   2.60132210E+14
+ NAME DETECTOR VANA079     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  325.7000  318.5563  332.8438  347.1312  440.0000  454.2875  425.7125  482.8625  415.4250  427.8025  403.0375  378.2725
+                    000018    000019    000020              000018    000017    000019              000017    000016    000015
+ RESP, REF    2.56921320E+14   2.56921320E+14
+ NAME DETECTOR VANA080     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  325.7000  318.5563  332.8438  347.1312  554.3000  568.5875  540.0125  597.1625  415.4250  427.8025  403.0375  378.2725
+                    000018    000019    000020              000022    000021    000023              000017    000016    000015
+ RESP, REF    2.49934616E+14   2.49934616E+14
+ NAME DETECTOR VANA081     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  440.0000  447.1437  432.8563  461.4313  211.4000  225.6875  197.1125  168.5375  415.4250  427.8025  403.0375  378.2725
+                    000027    000026    000028              000010    000009    000008              000017    000016    000015
+ RESP, REF    2.72015445E+14   2.72015445E+14
+ NAME DETECTOR VANA082     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  440.0000  447.1437  432.8563  461.4313  325.7000  339.9875  311.4125  368.5625  415.4250  427.8025  403.0375  378.2725
+                    000027    000026    000028              000014    000013    000015              000017    000016    000015
+ RESP, REF    2.66150265E+14   2.66150265E+14
+ NAME DETECTOR VANA083     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  440.0000  447.1437  432.8563  461.4313  440.0000  454.2875  425.7125  482.8625  415.4250  427.8025  403.0375  378.2725
+                    000027    000026    000028              000018    000017    000019              000017    000016    000015
+ RESP, REF    2.68948168E+14   2.68948168E+14
+ NAME DETECTOR VANA084     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  440.0000  447.1437  432.8563  461.4313  554.3000  568.5875  540.0125  597.1625  415.4250  427.8025  403.0375  378.2725
+                    000027    000026    000028              000022    000021    000023              000017    000016    000015
+ RESP, REF    2.55558674E+14   2.55558674E+14
+ NAME DETECTOR VANA085     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  182.8250  197.1125  168.5375  225.6875  401.1380  403.0375  378.2725  427.8025
+                    000032    000033    000031              000009    000008    000010              000016    000015    000017
+ RESP, REF    2.46218664E+14   2.46218664E+14
+ NAME DETECTOR VANA086     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  297.1250  311.4125  282.8375  339.9875  401.1380  403.0375  378.2725  427.8025
+                    000032    000033    000031              000013    000012    000014              000016    000015    000017
+ RESP, REF    2.72774916E+14   2.72774916E+14
+ NAME DETECTOR VANA087     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  468.5750  482.8625  454.2875  511.4375  401.1380  403.0375  378.2725  427.8025
+                    000032    000033    000031              000019    000018    000020              000016    000015    000017
+ RESP, REF    2.93360862E+14   2.93360862E+14
+ NAME DETECTOR VANA088     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  525.7250  518.5814  532.8688  504.2939  582.8750  597.1625  568.5875  625.7375  401.1380  403.0375  378.2725  427.8025
+                    000032    000033    000031              000023    000022    000024              000016    000015    000017
+ RESP, REF    2.24746310E+14   2.24746310E+14
+ NAME DETECTOR VANA089     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  611.4500  625.7375  597.1625  575.7313  268.5500  254.2625  282.8375  225.6875  401.1380  403.0375  378.2725  427.8025
+                    000038    000037    000036              000011    000012    000010              000016    000015    000017
+ RESP, REF    2.31654027E+14   2.31654027E+14
+ NAME DETECTOR VANA090     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  611.4500  625.7375  597.1625  575.7313  382.8500  397.1375  368.5625  425.7125  401.1380  403.0375  378.2725  427.8025
+                    000038    000037    000036              000016    000015    000017              000016    000015    000017
+ RESP, REF    2.86390097E+14   2.86390097E+14
+ NAME DETECTOR VANA091     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  611.4500  625.7375  597.1625  575.7313  497.1500  511.4375  482.8625  540.0125  401.1380  403.0375  378.2725  427.8025
+                    000038    000037    000036              000020    000019    000021              000016    000015    000017
+ RESP, REF    2.45418324E+14   2.45418324E+14
+ NAME DETECTOR VANA092     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  211.4000  204.2563  218.5437  189.9688  182.8250  197.1125  168.5375  225.6875  476.3850  477.6850  452.9200  500.5150
+                    000010    000011    000009              000009    000008    000010              000019    000018    000020
+ RESP, REF    1.53035456E+14   1.53035456E+14
+ NAME DETECTOR VANA093     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  211.4000  204.2563  218.5437  189.9688  354.2750  368.5625  339.9875  311.4125  476.3850  477.6850  452.9200  500.5150
+                    000010    000011    000009              000015    000014    000013              000019    000018    000020
+ RESP, REF    2.15083372E+14   2.15083372E+14
+ NAME DETECTOR VANA094     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  211.4000  204.2563  218.5437  189.9688  411.4250  397.1375  425.7125  368.5625  476.3850  477.6850  452.9200  500.5150
+                    000010    000011    000009              000016    000017    000015              000019    000018    000020
+ RESP, REF    2.20603479E+14   2.20603479E+14
+ NAME DETECTOR VANA095     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  211.4000  204.2563  218.5437  189.9688  582.8750  597.1625  568.5875  625.7375  476.3850  477.6850  452.9200  500.5150
+                    000010    000011    000009              000023    000022    000024              000019    000018    000020
+ RESP, REF    1.34914318E+14   1.34914318E+14
+ NAME DETECTOR VANA096     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  382.8500  375.7062  389.9938  361.4188  154.2500  168.5375  139.9625  197.1125  481.4650  477.6850  500.5150  452.9200
+                    000022    000023    000021              000008    000007    000009              000019    000020    000018
+ RESP, REF    1.76900039E+14   1.76900039E+14
+ NAME DETECTOR VANA097     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  382.8500  375.7062  389.9938  361.4188  382.8500  397.1375  368.5625  425.7125  481.4650  477.6850  500.5150  452.9200
+                    000022    000023    000021              000016    000015    000017              000019    000020    000018
+ RESP, REF    2.28293081E+14   2.28293081E+14
+ NAME DETECTOR VANA098     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  382.8500  375.7062  389.9938  361.4188  611.4500  597.1625  625.7375  568.5875  481.4650  477.6850  500.5150  452.9200
+                    000022    000023    000021              000023    000024    000022              000019    000020    000018
+ RESP, REF    1.51930710E+14   1.51930710E+14
+ NAME DETECTOR VANA099     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  554.3000  547.1562  561.4438  532.8688  182.8250  197.1125  168.5375  225.6875  476.3850  477.6850  452.9200  500.5150
+                    000034    000035    000033              000009    000008    000010              000019    000018    000020
+ RESP, REF    1.48329246E+14   1.48329246E+14
+ NAME DETECTOR VANA100     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  554.3000  547.1562  561.4438  532.8688  354.2750  368.5625  339.9875  311.4125  476.3850  477.6850  452.9200  500.5150
+                    000034    000035    000033              000015    000014    000013              000019    000018    000020
+ RESP, REF    2.17533651E+14   2.17533651E+14
+ NAME DETECTOR VANA101     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  554.3000  547.1562  561.4438  532.8688  411.4250  397.1375  425.7125  368.5625  476.3850  477.6850  452.9200  500.5150
+                    000034    000035    000033              000016    000017    000015              000019    000018    000020
+ RESP, REF    2.32276126E+14   2.32276126E+14
+ NAME DETECTOR VANA102     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  554.3000  547.1562  561.4438  532.8688  582.8750  597.1625  568.5875  625.7375  476.3850  477.6850  452.9200  500.5150
+                    000034    000035    000033              000023    000022    000024              000019    000018    000020
+ RESP, REF    1.41257716E+14   1.41257716E+14
+ NAME DETECTOR VANA001     
+ INTERPOLATION POLYNOMIALE DES LECTURES AUX VANADIUM
+
+
+                                                         BRACKETING PROCESS
+                                                         ******************
+
+     DET    X         X1        X2        X3        Y         Y1        Y2        Y3        Z         Z1        Z2        Z3
+
+     001  211.4000  204.2563  218.5437  189.9688  182.8250  197.1125  168.5375  225.6875  125.8650  124.5650  149.3300  101.7350
+                    000010    000011    000009              000009    000008    000010              000004    000005    000003
+ RESP, REF    1.59797832E+14   1.59797832E+14
+ NAME DETECTOR CION01B     
+ POS GEOM           43          43          12          13          12          12
+ DETFLU: FINITE ELEMENT NUMBER        15047
+ DETFLU: FINITE ELEMENT NUMBER        15091
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION01C     
+ POS GEOM           43          43          12          13          16          16
+ DETFLU: FINITE ELEMENT NUMBER        20327
+ DETFLU: FINITE ELEMENT NUMBER        20371
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION01A     
+ POS GEOM           43          43          12          13           8           8
+ DETFLU: FINITE ELEMENT NUMBER         9767
+ DETFLU: FINITE ELEMENT NUMBER         9811
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION01E     
+ POS GEOM           43          43          12          13          12          12
+ DETFLU: FINITE ELEMENT NUMBER        15047
+ DETFLU: FINITE ELEMENT NUMBER        15091
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION01F     
+ POS GEOM           43          43          12          13          16          16
+ DETFLU: FINITE ELEMENT NUMBER        20327
+ DETFLU: FINITE ELEMENT NUMBER        20371
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION02D     
+ POS GEOM            2           2          18          19           8           8
+ DETFLU: FINITE ELEMENT NUMBER         9990
+ DETFLU: FINITE ELEMENT NUMBER        10034
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION02E     
+ POS GEOM            2           2          18          19          11          11
+ DETFLU: FINITE ELEMENT NUMBER        13950
+ DETFLU: FINITE ELEMENT NUMBER        13994
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION02F     
+ POS GEOM            2           2          18          19          15          15
+ DETFLU: FINITE ELEMENT NUMBER        19230
+ DETFLU: FINITE ELEMENT NUMBER        19274
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION01G     
+ POS GEOM            2           2          18          19           8           8
+ DETFLU: FINITE ELEMENT NUMBER         9990
+ DETFLU: FINITE ELEMENT NUMBER        10034
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION01H     
+ POS GEOM            2           2          18          19          11          11
+ DETFLU: FINITE ELEMENT NUMBER        13950
+ DETFLU: FINITE ELEMENT NUMBER        13994
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION01J     
+ POS GEOM            2           2          18          19          15          15
+ DETFLU: FINITE ELEMENT NUMBER        19230
+ DETFLU: FINITE ELEMENT NUMBER        19274
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR CION01D     
+ POS GEOM           43          43          12          13           8           8
+ DETFLU: FINITE ELEMENT NUMBER         9767
+ DETFLU: FINITE ELEMENT NUMBER         9811
+ RESP, REF    0.00000000       0.00000000    
+ NAME DETECTOR PLAT001     
+ POS GEOM           11          11          11          13           4           4
+ DETFLU: FINITE ELEMENT NUMBER         4411
+ DETFLU: FINITE ELEMENT NUMBER         4455
+ DETFLU: FINITE ELEMENT NUMBER         4499
+ RESP, REF    1.00000000       2.17784236E+14
+ NAME DETECTOR PLAT002     
+ POS GEOM           11          11          18          20           4           4
+ DETFLU: FINITE ELEMENT NUMBER         4719
+ DETFLU: FINITE ELEMENT NUMBER         4763
+ DETFLU: FINITE ELEMENT NUMBER         4807
+ RESP, REF    1.00000024       2.06158363E+14
+ NAME DETECTOR PLAT003     
+ POS GEOM           23          23           8          10           4           4
+ DETFLU: FINITE ELEMENT NUMBER         4291
+ DETFLU: FINITE ELEMENT NUMBER         4335
+ DETFLU: FINITE ELEMENT NUMBER         4379
+ RESP, REF    1.00000000       2.15727903E+14
+ NAME DETECTOR PLAT004     
+ POS GEOM           23          23          14          16           4           4
+ DETFLU: FINITE ELEMENT NUMBER         4555
+ DETFLU: FINITE ELEMENT NUMBER         4599
+ DETFLU: FINITE ELEMENT NUMBER         4643
+ RESP, REF    1.00000000       2.52362212E+14
+ NAME DETECTOR PLAT005     
+ POS GEOM           23          23          21          23           4           4
+ DETFLU: FINITE ELEMENT NUMBER         4863
+ DETFLU: FINITE ELEMENT NUMBER         4907
+ DETFLU: FINITE ELEMENT NUMBER         4951
+ RESP, REF    1.00000024       2.14803696E+14
+ NAME DETECTOR PLAT006     
+ POS GEOM           35          35          11          13           4           4
+ DETFLU: FINITE ELEMENT NUMBER         4435
+ DETFLU: FINITE ELEMENT NUMBER         4479
+ DETFLU: FINITE ELEMENT NUMBER         4523
+ RESP, REF    1.00000024       1.98908291E+14
+ NAME DETECTOR PLAT007     
+ POS GEOM           35          35          18          20           4           4
+ DETFLU: FINITE ELEMENT NUMBER         4743
+ DETFLU: FINITE ELEMENT NUMBER         4787
+ DETFLU: FINITE ELEMENT NUMBER         4831
+ RESP, REF    1.00000000       2.15345550E+14
+ NAME DETECTOR PLAT008     
+ POS GEOM           11          11          11          13          19          19
+ DETFLU: FINITE ELEMENT NUMBER        24211
+ DETFLU: FINITE ELEMENT NUMBER        24255
+ DETFLU: FINITE ELEMENT NUMBER        24299
+ RESP, REF    1.00000000       1.94526400E+14
+ NAME DETECTOR PLAT009     
+ POS GEOM           11          11          18          20          19          19
+ DETFLU: FINITE ELEMENT NUMBER        24519
+ DETFLU: FINITE ELEMENT NUMBER        24563
+ DETFLU: FINITE ELEMENT NUMBER        24607
+ RESP, REF    1.00000000       1.97382319E+14
+ NAME DETECTOR PLAT010     
+ POS GEOM           23          23           8          10          19          19
+ DETFLU: FINITE ELEMENT NUMBER        24091
+ DETFLU: FINITE ELEMENT NUMBER        24135
+ DETFLU: FINITE ELEMENT NUMBER        24179
+ RESP, REF   0.999999940       2.03642485E+14
+ NAME DETECTOR PLAT011     
+ POS GEOM           23          23          14          16          19          19
+ DETFLU: FINITE ELEMENT NUMBER        24355
+ DETFLU: FINITE ELEMENT NUMBER        24399
+ DETFLU: FINITE ELEMENT NUMBER        24443
+ RESP, REF    1.00000000       2.35244670E+14
+ NAME DETECTOR PLAT012     
+ POS GEOM           23          23          21          23          19          19
+ DETFLU: FINITE ELEMENT NUMBER        24663
+ DETFLU: FINITE ELEMENT NUMBER        24707
+ DETFLU: FINITE ELEMENT NUMBER        24751
+ RESP, REF    1.00000000       1.88118443E+14
+ NAME DETECTOR PLAT013     
+ POS GEOM           35          35          11          13          19          19
+ DETFLU: FINITE ELEMENT NUMBER        24235
+ DETFLU: FINITE ELEMENT NUMBER        24279
+ DETFLU: FINITE ELEMENT NUMBER        24323
+ RESP, REF    1.00000000       1.87738607E+14
+ NAME DETECTOR PLAT014     
+ POS GEOM           35          35          18          20          19          19
+ DETFLU: FINITE ELEMENT NUMBER        24543
+ DETFLU: FINITE ELEMENT NUMBER        24587
+ DETFLU: FINITE ELEMENT NUMBER        24631
+ RESP, REF    1.00000000       2.05680162E+14
+ @END MODULE -> DETECT:     
+-->>MODULE DETECT:     : TIME SPENT=        0.000 MEMORY USAGE= 3.600E+01
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+>|K-EFFECTIVE:   9.960053e-01                                                                                             |>0069
+cle2000_c: cpu time= 3.00 second
+
+ normal end of execution for donjon 5  Version 5.0.12 ($Revision: 3956 $)              
+ check for warning in listing
+ before assuming your run was successful

@@ -1,0 +1,37 @@
+execute Candu6 with Donjon on system Linux_x86_64 with custom compiler
+use the existing directory Linux_x86_64
+RunDirectory: /tmp/rundir1
+CELNAT
+GTUBEB
+MATSTRB
+REFL
+RODB
+SetBurnup.c2m
+SetDetect.c2m
+SetDevPro.c2m
+SetDevice.c2m
+SetFuelMap.c2m
+SetModel.c2m
+SetReflPro.c2m
+ZCPOB
+code
+mydata
+Candu6 access script terminated
+Note: The following floating-point exceptions are signalling: IEEE_DENORMAL
+End of execution. Total execution time: 0h 0min 3s
+the listing is located on ./Linux_x86_64
+ @END MODULE -> DETECT:     
+-->>MODULE DETECT:     : TIME SPENT=        0.000 MEMORY USAGE= 3.600E+01
+->@BEGIN MODULE : GREP:       
+->@DESCRIPTION  : No description available for this module                                
+->@CREDITS      : No author provided for this module                                      
+->@COPYRIGHTS   : ECOLE POLYTECHNIQUE DE MONTREAL  
+                  GNU LESSER GENERAL PUBLIC LICENSE
+-->>module GREP:       : time spent=        0.000 memory usage= 0.000E+00
+->@END MODULE   : GREP:       
+>|K-EFFECTIVE:   9.958445e-01                                                                                             |>0069
+cle2000_c: cpu time= 3.00 second
+
+ normal end of execution for donjon 5  Version 5.0.12 ($Revision: 3956 $)              
+ check for warning in listing
+ before assuming your run was successful
