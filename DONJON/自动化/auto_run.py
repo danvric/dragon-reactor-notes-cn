@@ -7,22 +7,21 @@ import re
 with open("channels_list.txt", "r") as f:
     valid_channels = [line.strip() for line in f if line.strip()]
 
-# 【关键修复】必须把运行文件放在 data 目录下！
 run_file = "data/Candu6.x2m"
 result_file = os.path.join("Linux_x86_64", "Candu6.result")
 
 results_file = open("results.csv", "w")
-results_file.write("Run_ID,Channel_1,Channel_2,Channel_3,Channel_4,Keff\n")
+results_file.write("Run_ID,Channel_1,Channel_2,Channel_3,Channel_4,Keff,Max_Bundle_Power,Max_Channel_Power\n")
 
 for i in range(3):
     chosen = random.sample(valid_channels, 4)
     
-    # 生成换料指令，严格遵守 TINST: 的换行格式
+    # 拼装换料指令，严格遵守 TINST: 的换行格式
     refuel_lines = ""
     for ch in chosen:
         refuel_lines += f"          REFUEL CHAN {ch}  8\n"
 
-    # 2. 完整纯净的 x2m 内容
+    # 2. 你原本的 x2m 内容（原封不动，没加 ECHO 也没加 GREP POWER）
     x2m_content = f"""PROCEDURE assertS SetModel SetReflPro SetDevPro 
           SetFuelMap SetBurnup SetDevice SetDetect ;
 LINKED_LIST GEOM MATEX TRACK DEVICE MACRO FMAP NEWFLUX
@@ -92,44 +91,51 @@ END: ;
 QUIT .
 """
     
-    # 确保 data 目录存在（虽然通常都有）
     if not os.path.exists("data"):
         os.makedirs("data")
 
-    # 写入纯净版 x2m 到 data 目录！
     with open(run_file, "w") as f:
         f.write(x2m_content)
         
     print(f"\n[{i+1}/3] 测试通道: {chosen} ... 运行中")
     
-    # 强杀旧的 result 文件
+    # 跑之前强杀旧 result
     if os.path.exists(result_file):
         os.remove(result_file)
         
     log_name = f"run_{i+1}.log"
     with open(log_name, "w") as log_file:
-        # 【关键修复】调用时带上 data/ 路径
         subprocess.run(["./rdonjon", "Candu6.x2m"], stdout=log_file, stderr=subprocess.STDOUT)
     
     keff = "Error"
+    max_bundle_power = "Error"
+    max_channel_power = "Error"
     
-    # 3. 双保险提取
-    if os.path.exists(log_name):
-        with open(log_name, "r", errors="ignore") as f:
+    # 【关键修复】直接去 result 文件里抓数据！
+    if os.path.exists(result_file):
+        with open(result_file, "r", errors="ignore") as f:
             content = f.read()
-            match = re.search(r"K-EFFECTIVE:\s*([0-9]+\.[0-9]+(?:E[+-]?[0-9]+)?)", content)
-            if match:
-                keff = match.group(1)
-            elif os.path.exists(result_file):
-                with open(result_file, "r", errors="ignore") as rf:
-                    rc = rf.read()
-                    # result 文件里 K-EFFECTIVE 后面通常跟着一堆空格和数字
-                    match2 = re.search(r"K-EFFECTIVE\s+([0-9]+\.[0-9]+(?:E[+-]?[0-9]+)?)", rc)
-                    if match2:
-                        keff = match2.group(1)
-                
-    print(f"✅ 结果: Keff = {keff}")
-    results_file.write(f"{i+1},{chosen[0]},{chosen[1]},{chosen[2]},{chosen[3]},{keff}\n")
+            
+            # 抓取 K-EFFECTIVE (兼容你代码里的 ECHO 格式)
+            match_k = re.search(r"K-EFFECTIVE.*?([0-9]+\.[0-9]+(?:[Ee][+-]?[0-9]+)?)", content)
+            if match_k: 
+                keff = float(match_k.group(1))
+            
+            # 抓取 MAXIMUM BUNDLE POWER
+            match_b = re.search(r"MAXIMUM BUNDLE POWER\s*=\s*([0-9.]+)", content)
+            if match_b: 
+                max_bundle_power = float(match_b.group(1))
+            
+            # 抓取 MAXIMUM CHANNEL POWER
+            match_c = re.search(r"MAXIMUM CHANNEL POWER\s*=\s*([0-9.]+)", content)
+            if match_c: 
+                max_channel_power = float(match_c.group(1))
+
+    # 直接打印在终端
+    print(f"-> 结果: Keff={keff}, 最大棒功率={max_bundle_power}, 最大通道功率={max_channel_power}")
+    
+    # 存入 CSV
+    results_file.write(f"{i+1},{chosen[0]},{chosen[1]},{chosen[2]},{chosen[3]},{keff},{max_bundle_power},{max_channel_power}\n")
 
 results_file.close()
-print("\n全部跑完！请查看 results.csv")
+print("\n全部跑完！请查看上面的输出。")

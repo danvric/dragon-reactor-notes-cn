@@ -29,3 +29,6 @@ result的截图
 [log1](./Material/第一次打通/run_1.log)
 [log2](./Material/第一次打通/run_2.log)
 [log3](./Material/第一次打通/run_3.log)
+
+加入提取功率等数据代码后
+[全部result统计文件](./Material/第一次打通/results2.csv)

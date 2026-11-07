@@ -1,0 +1,4 @@
+Run_ID,Channel_1,Channel_2,Channel_3,Channel_4,Keff,Max_Bundle_Power,Max_Channel_Power
+1,M02,H08,G09,Q12,0.9959825,889.4,6953.9
+2,M02,H08,D15,H06,0.995989,871.6,7046.0
+3,Q12,M02,J08,H06,0.9959036,886.4,6998.8
