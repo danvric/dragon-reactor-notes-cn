@@ -1,27 +1,15 @@
 import subprocess
-import random
 import os
 import re
 
-# 1. 读取合法通道
-with open("channels_list.txt", "r") as f:
-    valid_channels = [line.strip() for line in f if line.strip()]
-
-run_file = "data/Candu6.x2m"
-result_file = os.path.join("Linux_x86_64", "Candu6.result")
-
-results_file = open("results.csv", "w")
-results_file.write("Run_ID,Channel_1,Channel_2,Channel_3,Channel_4,Keff,Max_Bundle_Power,Max_Channel_Power\n")
-
-for i in range(3):
-    chosen = random.sample(valid_channels, 4)
+def evaluate(chosen_channels):
+    run_file = "data/Candu6.x2m"
+    result_file = os.path.join("Linux_x86_64", "Candu6.result")
     
-    # 拼装换料指令，严格遵守 TINST: 的换行格式
     refuel_lines = ""
-    for ch in chosen:
+    for ch in chosen_channels:
         refuel_lines += f"          REFUEL CHAN {ch}  8\n"
 
-    # 2. 你原本的 x2m 内容（原封不动，没加 ECHO 也没加 GREP POWER）
     x2m_content = f"""PROCEDURE assertS SetModel SetReflPro SetDevPro 
           SetFuelMap SetBurnup SetDevice SetDetect ;
 LINKED_LIST GEOM MATEX TRACK DEVICE MACRO FMAP NEWFLUX
@@ -97,45 +85,31 @@ QUIT .
     with open(run_file, "w") as f:
         f.write(x2m_content)
         
-    print(f"\n[{i+1}/3] 测试通道: {chosen} ... 运行中")
-    
-    # 跑之前强杀旧 result
     if os.path.exists(result_file):
         os.remove(result_file)
         
-    log_name = f"run_{i+1}.log"
+    log_name = "temp_run.log"
     with open(log_name, "w") as log_file:
         subprocess.run(["./rdonjon", "Candu6.x2m"], stdout=log_file, stderr=subprocess.STDOUT)
     
-    keff = "Error"
-    max_bundle_power = "Error"
-    max_channel_power = "Error"
+    keff = None
+    ppf = None
+    max_channel_power = None
     
-    # 【关键修复】直接去 result 文件里抓数据！
     if os.path.exists(result_file):
         with open(result_file, "r", errors="ignore") as f:
             content = f.read()
             
-            # 抓取 K-EFFECTIVE (兼容你代码里的 ECHO 格式)
+            # 抓 Keff
             match_k = re.search(r"K-EFFECTIVE.*?([0-9]+\.[0-9]+(?:[Ee][+-]?[0-9]+)?)", content)
-            if match_k: 
-                keff = float(match_k.group(1))
+            if match_k: keff = float(match_k.group(1))
             
-            # 抓取 MAXIMUM BUNDLE POWER
-            match_b = re.search(r"MAXIMUM BUNDLE POWER\s*=\s*([0-9.]+)", content)
-            if match_b: 
-                max_bundle_power = float(match_b.group(1))
+            # 抓 PPF (Max/Avg 比值)
+            match_p = re.search(r"BUNDLE-POWER FORM FACTOR.*?MAX/AVG\s*=\s*([0-9.]+)", content)
+            if match_p: ppf = float(match_p.group(1))
             
-            # 抓取 MAXIMUM CHANNEL POWER
+            # 抓最大通道功率
             match_c = re.search(r"MAXIMUM CHANNEL POWER\s*=\s*([0-9.]+)", content)
-            if match_c: 
-                max_channel_power = float(match_c.group(1))
-
-    # 直接打印在终端
-    print(f"-> 结果: Keff={keff}, 最大棒功率={max_bundle_power}, 最大通道功率={max_channel_power}")
-    
-    # 存入 CSV
-    results_file.write(f"{i+1},{chosen[0]},{chosen[1]},{chosen[2]},{chosen[3]},{keff},{max_bundle_power},{max_channel_power}\n")
-
-results_file.close()
-print("\n全部跑完！请查看上面的输出。")
+            if match_c: max_channel_power = float(match_c.group(1))
+            
+    return keff, ppf, max_channel_power
