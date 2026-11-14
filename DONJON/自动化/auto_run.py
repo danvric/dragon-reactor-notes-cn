@@ -10,6 +10,7 @@ def evaluate(chosen_channels):
     for ch in chosen_channels:
         refuel_lines += f"          REFUEL CHAN {ch}  8\n"
 
+    # 注意：这里的时间步已经修改为官方的 0.2 天和 2.7 天
     x2m_content = f"""PROCEDURE assertS SetModel SetReflPro SetDevPro 
           SetFuelMap SetBurnup SetDevice SetDetect ;
 LINKED_LIST GEOM MATEX TRACK DEVICE MACRO FMAP NEWFLUX
@@ -43,8 +44,8 @@ FMAP MATEX := SetFuelMap MATEX ;
 FMAP := SetBurnup FMAP ;
 FMAP := TINST: FMAP  ::
           EDIT 0
-          TIME 1.0 DAY 
-{refuel_lines}          TIME 2.4  DAY  ;
+          TIME 0.2 DAY 
+{refuel_lines}          TIME 2.7 DAY  ;
 LINKED_LIST CPOREFL ;
 SEQ_ASCII CELNAT REFL ;
 CPOREFL := REFL ;
@@ -105,7 +106,7 @@ QUIT .
             if match_k: keff = float(match_k.group(1))
             
             # 抓 PPF (Max/Avg 比值)
-            match_p = re.search(r"BUNDLE-POWER FORM FACTOR.*?MAX/AVG\s*=\s*([0-9.]+)", content)
+            match_p = re.search(r"CHANNEL-POWER FORM FACTOR.*?MAX/AVG\s*=\s*([0-9.]+)", content)
             if match_p: ppf = float(match_p.group(1))
             
             # 抓最大通道功率
