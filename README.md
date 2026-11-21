@@ -13,7 +13,9 @@
 
 4. 神秘教程 [点我跳转](./TheSecretOfAI.md)
 
-5. DONJON [点我跳转](./DONJON/SOMESTUFFS)
+5. **DONJON 科研部分：CANDU-6 长周期连续换料优化** [点我跳转](./DONJON/README.md)
+   > 代码 + 环境部署 + 每个阶段的实验记录（[阶段索引](./DONJON/SOMESTUFFS/README.md)）
+
 
 > 小编就是因为极度厌恶这种官方手册一点人话不说，全是专业用语，让人一点看的欲望都没有，所以这个项目致力于让每个人都能懂 DRAGON 怎么用。
 
